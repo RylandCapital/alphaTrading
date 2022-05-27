@@ -1,1 +1,1 @@
-alphaDefi Trading Systems
+AlphaDefi Trading Systems
