@@ -1,0 +1,24 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# VsCode
+.vscode/
+
+# Random
+pyvenv.cfg
+*.exe
+*.bat
+*.ps1
+share/
+
+# Site Packages
+Lib/
+Include/
+Scripts/
+
