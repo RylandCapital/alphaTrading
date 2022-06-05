@@ -1,4 +1,7 @@
 import momo.scorer as scorer
 
 
-portfolio = scorer.scorer()
+scores = scorer.scorer()
+live_model_allocation = scores['model']
+
+
