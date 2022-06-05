@@ -39,6 +39,7 @@ def ohlc():
 
 def accounts_report():
 
+    #pull any assets waiting in spot (if any)
     spot = pd.DataFrame(config.kucoin.fetch_balance()['info']['data'])
     spot[['balance', 'available']] = spot[['balance', 'available']].astype(float)
     spot = spot[spot['balance']>0].set_index('currency')
@@ -52,14 +53,28 @@ def accounts_report():
     spot['usdt_value'] = spot['usdt_rate']*spot['balance']
     spot['account_value'] = spot['usdt_value'].sum()
 
+    #pull futures account info and position status
+    futures = pd.DataFrame(config.kucoin_futures.fetch_balance()['info'])[['data']]
+    futures_positions = pd.DataFrame(config.kucoin_futures.fetch_positions())
 
+    return {
+        'spot':{
+            'value':spot['account_value'].iloc[0],
+            'holdings':spot
+        },
+        'futures':{
 
+            'value': futures.loc['accountEquity'],
+            'available_balance': futures.loc['availableBalance'],
+            'position_margin': futures.loc['positionMargin'],
+            'unrealised_pnl': futures.loc['unrealisedPNL'],
+            'positions':futures_positions
 
-
-    futures = config.kucoin_futures.fetch_balance()
-    config.kucoin_futures.fetch_positions()
-
-    return None
+        },
+        'total':{
+            'value': futures.loc['accountEquity'] + spot['account_value'].iloc[0]
+        }
+    }
 
 
 
