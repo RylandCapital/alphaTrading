@@ -37,43 +37,19 @@ def ohlc():
         'not_included': errors
         }
 
-def accounts_report():
-
-    #pull any assets waiting in spot (if any)
-    spot = pd.DataFrame(config.kucoin.fetch_balance()['info']['data'])
-    spot[['balance', 'available']] = spot[['balance', 'available']].astype(float)
-    spot = spot[spot['balance']>0].set_index('currency')
-
-    spot_values = pd.DataFrame(columns=['usdt_rate'])
-    for c in spot.index:
-        time.sleep(1)
-        spot_values.loc[c,'usdt_rate'] = config.kucoin.fetch_ohlcv(c+'/'+'USDT','1m')[-1][4]
-
-    spot = spot.join(spot_values)
-    spot['usdt_value'] = spot['usdt_rate']*spot['balance']
-    spot['account_value'] = spot['usdt_value'].sum()
+# returns information on status of the account to be traded (kukcoin futures for us)
+def account_report():
 
     #pull futures account info and position status
     futures = pd.DataFrame(config.kucoin_futures.fetch_balance()['info'])[['data']]
     futures_positions = pd.DataFrame(config.kucoin_futures.fetch_positions())
 
     return {
-        'spot':{
-            'value':spot['account_value'].iloc[0],
-            'holdings':spot
-        },
-        'futures':{
-
             'value': futures.loc['accountEquity'],
             'available_balance': futures.loc['availableBalance'],
             'position_margin': futures.loc['positionMargin'],
             'unrealised_pnl': futures.loc['unrealisedPNL'],
             'positions':futures_positions
-
-        },
-        'total':{
-            'value': futures.loc['accountEquity'] + spot['account_value'].iloc[0]
-        }
     }
 
 

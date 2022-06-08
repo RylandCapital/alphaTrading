@@ -6,9 +6,10 @@ import momo.config as config
 
 
 
-def scorer(data=collector.ohlc ()):
+def scorer():
     print('...scoring current universe')
-
+    data=collector.ohlc()
+    
     scores = data['data'].groupby('symbol').apply(
         lambda x: config.momentum_score(x['close'])
         ).sort_values(ascending=False).iloc[:config.portfolio_size]
